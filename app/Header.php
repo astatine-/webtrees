@@ -21,15 +21,11 @@ namespace Fisharebest\Webtrees;
 
 use Closure;
 use Exception;
+use Fisharebest\Webtrees\Factories\HeaderFactory;
 use Fisharebest\Webtrees\Http\RequestHandlers\HeaderPage;
 use Illuminate\Database\Capsule\Manager as DB;
-use stdClass;
 
-use function e;
-use function preg_replace_callback;
-use function str_pad;
-
-use const STR_PAD_LEFT;
+use function app;
 
 /**
  * A GEDCOM header (HEAD) object.
@@ -49,12 +45,7 @@ class Header extends GedcomRecord
      */
     public static function rowMapper(Tree $tree): Closure
     {
-        return static function (stdClass $row) use ($tree): Header {
-            $header = Header::getInstance($row->o_id, $tree, $row->o_gedcom);
-            assert($header instanceof Header);
-
-            return $header;
-        };
+        return app(HeaderFactory::class)->mapper($tree);
     }
 
     /**

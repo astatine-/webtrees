@@ -21,6 +21,7 @@ namespace Fisharebest\Webtrees\Functions;
 
 use Fisharebest\Webtrees\Auth;
 use Fisharebest\Webtrees\Fact;
+use Fisharebest\Webtrees\Factories\HeaderFactory;
 use Fisharebest\Webtrees\Family;
 use Fisharebest\Webtrees\Gedcom;
 use Fisharebest\Webtrees\GedcomRecord;
@@ -122,8 +123,10 @@ class FunctionsExport
         $LANG = '';
 
         // Preserve some values from the original header
-        $header = Header::getInstance('HEAD', $tree) ?? new Header('HEAD', '0 HEAD', null, $tree);
+        $header_factory = app(HeaderFactory::class);
+        assert($header_factory instanceof HeaderFactory);
 
+        $header = $header_factory->make('HEAD', $tree) ?? new Header('HEAD', '0 HEAD', null, $tree);
         $fact   = $header->facts(['COPR'])->first();
 
         if ($fact instanceof Fact) {

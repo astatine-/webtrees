@@ -21,9 +21,11 @@ namespace Fisharebest\Webtrees;
 
 use Closure;
 use Exception;
+use Fisharebest\Webtrees\Factories\SubmissionFactory;
 use Fisharebest\Webtrees\Http\RequestHandlers\SubmissionPage;
 use Illuminate\Database\Capsule\Manager as DB;
-use stdClass;
+
+use function app;
 
 /**
  * A GEDCOM submission (SUBN) object.
@@ -45,12 +47,7 @@ class Submission extends GedcomRecord
      */
     public static function rowMapper(Tree $tree): Closure
     {
-        return static function (stdClass $row) use ($tree): Submission {
-            $submission = Submission::getInstance($row->o_id, $tree, $row->o_gedcom);
-            assert($submission instanceof Submission);
-
-            return $submission;
-        };
+        return app(SubmissionFactory::class)->mapper($tree);
     }
 
     /**

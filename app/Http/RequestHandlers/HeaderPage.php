@@ -22,6 +22,7 @@ namespace Fisharebest\Webtrees\Http\RequestHandlers;
 use Fig\Http\Message\StatusCodeInterface;
 use Fisharebest\Webtrees\Auth;
 use Fisharebest\Webtrees\Fact;
+use Fisharebest\Webtrees\Factories\HeaderFactory;
 use Fisharebest\Webtrees\Http\ViewResponseTrait;
 use Fisharebest\Webtrees\Header;
 use Fisharebest\Webtrees\Tree;
@@ -60,6 +61,19 @@ class HeaderPage implements RequestHandlerInterface
         'NOTE',
     ];
 
+    /** @var HeaderFactory */
+    private $header_factory;
+
+    /**
+     * HeaderPage constructor.
+     *
+     * @param HeaderFactory $header_factory
+     */
+    public function __construct(HeaderFactory $header_factory)
+    {
+        $this->header_factory = $header_factory;
+    }
+
     /**
      * @param ServerRequestInterface $request
      *
@@ -73,7 +87,7 @@ class HeaderPage implements RequestHandlerInterface
         $xref = $request->getAttribute('xref');
         assert(is_string($xref));
 
-        $header = Header::getInstance($xref, $tree);
+        $header = $this->header_factory->make($xref, $tree);
         $header = Auth::checkHeaderAccess($header, false);
 
         // Redirect to correct xref/slug

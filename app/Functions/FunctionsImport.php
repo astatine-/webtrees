@@ -21,6 +21,8 @@ namespace Fisharebest\Webtrees\Functions;
 
 use Fisharebest\Webtrees\Date;
 use Fisharebest\Webtrees\Exceptions\GedcomErrorException;
+use Fisharebest\Webtrees\Factories\IndividualFactory;
+use Fisharebest\Webtrees\Factories\MediaFactory;
 use Fisharebest\Webtrees\Family;
 use Fisharebest\Webtrees\Gedcom;
 use Fisharebest\Webtrees\GedcomTag;
@@ -655,8 +657,11 @@ class FunctionsImport
 
         switch ($type) {
             case Individual::RECORD_TYPE:
-                $record = new Individual($xref, $gedrec, null, $tree);
+                $individual_factory = app(IndividualFactory::class);
+                assert($individual_factory instanceof IndividualFactory);
 
+                $record = $individual_factory->new($xref, $gedrec, null, $tree);
+                
                 if (preg_match('/\n1 RIN (.+)/', $gedrec, $match)) {
                     $rin = $match[1];
                 } else {
@@ -752,7 +757,7 @@ class FunctionsImport
 
 
             case Media::RECORD_TYPE:
-                $record = new Media($xref, $gedrec, null, $tree);
+                $record = app(MediaFactory::class)->new($xref, $gedrec, null, $tree);
 
                 DB::table('media')->insert([
                     'm_id'     => $xref,
@@ -1022,7 +1027,7 @@ class FunctionsImport
             $gedrec = preg_replace('/\n1 FILE (.+)\n1 FORM (.+)\n1 TITL (.+)/', "\n1 FILE $1\n2 FORM $2\n2 TITL $3", $gedrec);
 
             // Create new record
-            $record = new Media($xref, $gedrec, null, $tree);
+            $record = app(MediaFactory::class)->new($xref, $gedrec, null, $tree);
 
             DB::table('media')->insert([
                 'm_id'     => $xref,

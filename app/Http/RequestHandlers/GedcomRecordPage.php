@@ -20,6 +20,7 @@ declare(strict_types=1);
 namespace Fisharebest\Webtrees\Http\RequestHandlers;
 
 use Fisharebest\Webtrees\Auth;
+use Fisharebest\Webtrees\Factories\GedcomRecordFactory;
 use Fisharebest\Webtrees\Family;
 use Fisharebest\Webtrees\Gedcom;
 use Fisharebest\Webtrees\GedcomRecord;
@@ -61,6 +62,19 @@ class GedcomRecordPage implements RequestHandlerInterface
         Submitter::class,
     ];
 
+    /** @var GedcomRecordFactory */
+    private $gedcom_record_factory;
+
+    /**
+     * SubmitterPage constructor.
+     *
+     * @param GedcomRecordFactory $gedcom_record_factory
+     */
+    public function __construct(GedcomRecordFactory $gedcom_record_factory)
+    {
+        $this->gedcom_record_factory = $gedcom_record_factory;
+    }
+
     /**
      * Show a gedcom record's page.
      *
@@ -76,7 +90,7 @@ class GedcomRecordPage implements RequestHandlerInterface
         $xref = $request->getAttribute('xref');
         assert(is_string($xref));
 
-        $record = GedcomRecord::getInstance($xref, $tree);
+        $record = $this->gedcom_record_factory->make($xref, $tree);
         $record = Auth::checkRecordAccess($record);
 
         // Standard genealogy records have their own pages.
